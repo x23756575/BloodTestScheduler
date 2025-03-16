@@ -4,13 +4,14 @@
  */
 package bloodtestscheduler;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
  *
  * @author samor
  */
-public class Patients {
+public class Patients implements Serializable{
     
     private String name,details;
     private int age;
@@ -83,6 +84,11 @@ public class Patients {
 
     public void setFromWard(boolean fromWard) {
         this.fromWard = fromWard;
+    }
+
+    @Override
+    public String toString() {
+        return "\n\nPatients" + "\nName:" + name + "\nDetails: " + details + "\nAge: " + age + "\nPriority: " + priority + "\nStatus" + shownUp + "\nFrom ward: " + fromWard + "\nAppointment time: " + time;
     }
 
 
