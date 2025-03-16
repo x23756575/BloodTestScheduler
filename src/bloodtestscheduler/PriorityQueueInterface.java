@@ -4,13 +4,15 @@
  */
 package bloodtestscheduler;
 
+import java.time.LocalDateTime;
+
 /**
  *
  * @author samor
  */
 public interface PriorityQueueInterface {
     
-    public void enqueue(Object element,Priority priority);
+    public void enqueue(String name, String details, int age, Priority priority, boolean shownUp,boolean fromWard,LocalDateTime time);
     public Object dequeue();        
     public boolean isEmpty();
     public int size();   

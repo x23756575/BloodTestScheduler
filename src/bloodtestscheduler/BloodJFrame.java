@@ -4,6 +4,9 @@
  */
 package bloodtestscheduler;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+
 /**
  *
  * @author samor
@@ -13,9 +16,23 @@ public class BloodJFrame extends javax.swing.JFrame {
     /**
      * Creates new form BloodJFrame
      */
+    private ArrayList<Patients> prioQueue = new ArrayList<>();
+    PriorityQueue pq = new PriorityQueue();
+    Priority priority;
     public BloodJFrame() {
         initComponents();
     }
+    boolean shownUp = true;//this will be used to check if the patient has shown up
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -26,21 +43,128 @@ public class BloodJFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jScrollPane4 = new javax.swing.JScrollPane();
+        ageArea = new javax.swing.JTextArea();
+        submit = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        nameArea = new javax.swing.JTextArea();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        detailsArea = new javax.swing.JTextArea();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        printArea = new javax.swing.JTextArea();
+        ward = new javax.swing.JCheckBox();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        ageArea.setColumns(20);
+        ageArea.setRows(5);
+        jScrollPane4.setViewportView(ageArea);
+
+        submit.setText("Submit");
+        submit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                submitActionPerformed(evt);
+            }
+        });
+
+        nameArea.setColumns(20);
+        nameArea.setRows(5);
+        jScrollPane1.setViewportView(nameArea);
+
+        detailsArea.setColumns(20);
+        detailsArea.setRows(5);
+        jScrollPane2.setViewportView(detailsArea);
+
+        printArea.setColumns(20);
+        printArea.setRows(5);
+        jScrollPane3.setViewportView(printArea);
+
+        ward.setText("Did u come from a ward");
+        ward.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                wardActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 264, Short.MAX_VALUE)
+                .addGap(27, 27, 27))
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(14, 14, 14)
+                        .addComponent(submit))
+                    .addComponent(ward))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(17, 17, 17)
+                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(15, 15, 15)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(27, 27, 27)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)))
+                .addGap(18, 18, 18)
+                .addComponent(ward, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(27, 27, 27)
+                .addComponent(submit)
+                .addContainerGap(52, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void submitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submitActionPerformed
+        String name = nameArea.getText();//takes in info from textAreas
+        String strAge = ageArea.getText();//..
+        int age = Integer.parseInt(strAge);//..
+        String details = detailsArea.getText();//..
+        boolean fromWard = ward.isSelected();
+        LocalDateTime time;
+   
+
+        if(name != null && strAge != null && details != null){
+         time = LocalDateTime.now();
+        Patients temp = new Patients(name,details,age,priority,shownUp,fromWard,time);  
+        
+        
+        if(age >= 60 || age == 1 || fromWard == true){// sets priority based on age or if there coming from a ward. i think this is most suitable for a simple application       
+             priority = priority.HIGH;
+            
+        }else if(age < 60 && age >= 35){
+             priority = priority.MEDIUM;        
+        }else{
+             priority = priority.LOW;
+        }
+            pq.enqueue(name,details,age,priority,shownUp,fromWard,time);
+            
+            
+        }    
+            printArea.setText(pq.printPriorityQueue());
+    }//GEN-LAST:event_submitActionPerformed
+
+    private void wardActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_wardActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_wardActionPerformed
 
     /**
      * @param args the command line arguments
@@ -78,5 +202,15 @@ public class BloodJFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextArea ageArea;
+    private javax.swing.JTextArea detailsArea;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JTextArea nameArea;
+    private javax.swing.JTextArea printArea;
+    private javax.swing.JButton submit;
+    private javax.swing.JCheckBox ward;
     // End of variables declaration//GEN-END:variables
 }
