@@ -6,6 +6,7 @@ package bloodtestscheduler;
 
 import bloodtestscheduler.dll.DLL;
 import bloodtestscheduler.dll.Node;
+import bloodtestscheduler.stack.Stack;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -21,26 +22,24 @@ import java.util.ArrayList;
  */
 public class PriorityQueue implements PriorityQueueInterface{  
     private ArrayList<Patients> prioQueue = new ArrayList<>();     
-    private ArrayList<Patients> noShow = new ArrayList<>(); 
     
     private Priority priority;
     
     File f = new File("patients.dat");
     File missed = new File("missed.dat");
     private DLL prioQueueDLL;
-    
+    Stack stack;
     LocalDateTime currentTime;//added this method to check if patient has missed an appointment
 
-    public void setNoShow(ArrayList<Patients> noShow){
-        this.noShow = noShow;
-    }
     public PriorityQueue() {
         this.prioQueueDLL = new DLL();//this is a empty dll, i added this because i was getting getting prioQueueDLL is null in other methods
     }    
-    public void updateDLL(DLL dll) {
-        System.out.println("Updating DLL reference to: " + dll);
+    public void updateDLL(DLL dll) {//to update the double linked list to most recent values so i added this method to update. i call in this method BloodJFrame class
         this.prioQueueDLL = dll;
     }  
+    public void updateStack(Stack stack){//to update the stack so content is recent
+        this.stack = stack;
+    }
     public void save() {
         
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f))) {
@@ -54,7 +53,7 @@ public class PriorityQueue implements PriorityQueueInterface{
     public void noShowSave() {
         
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(missed))) {
-            oos.writeObject(noShow);
+            oos.writeObject(stack);
             System.out.println("Queue Saved");
         } catch(IOException e){
         System.out.println(e);
@@ -69,15 +68,15 @@ public class PriorityQueue implements PriorityQueueInterface{
         Node currentNode = prioQueueDLL.getHead();
         while(currentNode != null){
             Patients patient = currentNode.getElement();
-            Node nextNode = currentNode.getNext();
             
             if(currentTime.isAfter(patient.getTime().plusMinutes(15))){//i added this to check if user hasnt shownup for there appointment with 15 minutes leeway
                 
                 patient.setShownUp(false);//this changes the shownUp boolean value to false because the user hasnt show up               
                 prioQueueDLL.remove(patient);//removes from dll
-                noShow.add(patient);//adds the patient to the noShow arraylist                 
+                stack.push(patient);//pushes patient onto stack 
+
             }
-            currentNode = nextNode;
+            currentNode = currentNode.getNext();
         }
         
               
@@ -124,16 +123,16 @@ public class PriorityQueue implements PriorityQueueInterface{
 
 @Override
 public String printPriorityQueue() {
-    StringBuilder sb = new StringBuilder();
+    StringBuilder ss = new StringBuilder();
     
     Node currentNode = prioQueueDLL.getHead();//gets head of list
     
     while (currentNode != null) {//loops while node isnt nul
-        sb.append(currentNode.getElement()).append("\n");//appends to stringbuilder
+        ss.append(currentNode.getElement()).append("\n");//appends to stringbuilder
         currentNode = currentNode.getNext();//gets next node so loop continues
     }
     
-    return sb.toString();
+    return ss.toString();
 }
 
     

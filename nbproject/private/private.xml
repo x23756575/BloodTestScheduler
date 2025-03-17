@@ -5,10 +5,9 @@
         <group>
             <file>file:/C:/Users/samor/OneDrive/Documents/NetBeansProjects/BloodTestScheduler/src/bloodtestscheduler/BloodJFrame.java</file>
             <file>file:/C:/Users/samor/OneDrive/Documents/NetBeansProjects/BloodTestScheduler/src/bloodtestscheduler/dll/DLL.java</file>
-            <file>file:/C:/Users/samor/OneDrive/Documents/NetBeansProjects/BloodTestScheduler/src/bloodtestscheduler/PriorityQueueInterface.java</file>
-            <file>file:/C:/Users/samor/OneDrive/Documents/NetBeansProjects/BloodTestScheduler/src/bloodtestscheduler/dll/LinearListInterface.java</file>
+            <file>file:/C:/Users/samor/OneDrive/Documents/NetBeansProjects/BloodTestScheduler/src/bloodtestscheduler/stack/StackInterface.java</file>
             <file>file:/C:/Users/samor/OneDrive/Documents/NetBeansProjects/BloodTestScheduler/src/bloodtestscheduler/PriorityQueue.java</file>
-            <file>file:/C:/Users/samor/OneDrive/Documents/NetBeansProjects/BloodTestScheduler/src/bloodtestscheduler/dll/Node.java</file>
+            <file>file:/C:/Users/samor/OneDrive/Documents/NetBeansProjects/BloodTestScheduler/src/bloodtestscheduler/stack/Stack.java</file>
         </group>
     </open-files>
 </project-private>

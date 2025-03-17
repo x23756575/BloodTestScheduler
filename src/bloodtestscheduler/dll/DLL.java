@@ -112,11 +112,11 @@ public String getPatientInfo(){//this method gets the element of the curr. i use
     if (curr == null) {
         return "curr is null";
     }
-    
+//    
     try {
         return curr.getElement().toString();
     } catch (NullPointerException e) {
-        return "Error: Patient data is null";
+        return "patient data null";
     }
 }
 

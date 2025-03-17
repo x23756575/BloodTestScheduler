@@ -6,6 +6,7 @@ package bloodtestscheduler;
 
 import bloodtestscheduler.Patients;
 import bloodtestscheduler.dll.DLL;
+import bloodtestscheduler.stack.Stack;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -23,9 +24,9 @@ public class BloodJFrame extends javax.swing.JFrame {
 
     File f = new File("patients.dat");
     File missed = new File("missed.dat");
-    private ArrayList<Patients> noShow = new ArrayList<>(); 
     DLL prioQueueDLL = new DLL();   
     PriorityQueue pq = new PriorityQueue();
+    Stack stack = new Stack();
     
 
     Priority priority;
@@ -49,7 +50,7 @@ public void loadPatients() {
                 prioQueueDLL = (DLL) obj;
                 
                 pq.updateDLL(prioQueueDLL);//i added this method because the dll was being updates consistenly throughout my code, so this updates the prioQueueDLL in PriorityQueue class
-                
+                pq.updateStack(stack);
                 if (prioQueueDLL.getHead() != null) { 
                     prioQueueDLL.setCurr(prioQueueDLL.getHead());//i had issues with curr being null, so i set it to head to fix that when patients load up so next and back function properly
                     printArea.setText(prioQueueDLL.getPatientInfo());
@@ -68,23 +69,17 @@ public void loadPatients() {
    public void loadNoShows(){
     if(missed.exists()){       
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(missed))) {
+            
             Object obj = ois.readObject();
             StringBuilder ss = new StringBuilder();
-           
-                noShow = (ArrayList<Patients>) obj;
-                pq.setNoShow(noShow);//to update noShow arraylist to the most recent content in PriorityQueue class
-                
-            if(!noShow.isEmpty()){//check if empty
-                for(Patients patient : noShow){//loop through array to print out no shows
-                 ss.append(patient);
-                 ss.append("\n");
-                }
-             noShowArea.setText(ss.toString());//
-            }else{
-                System.out.println("no one has missed there appointment");
-            }
-                
             
+            
+            if(obj instanceof Stack){//implemented the stack
+                stack = (Stack) obj;
+               
+              noShowArea.setText(stack.displayStack());//displays all of stack
+            }
+
         }catch(IOException | ClassNotFoundException e){
             System.out.println(e);
         }    
