@@ -6,7 +6,7 @@ package bloodtestscheduler;
 
 import bloodtestscheduler.dll.DLL;
 import bloodtestscheduler.dll.Node;
-import bloodtestscheduler.stack.Stack;
+import bloodtestscheduler.queue.Queue;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -28,7 +28,7 @@ public class PriorityQueue implements PriorityQueueInterface{
     File f = new File("patients.dat");
     File missed = new File("missed.dat");
     private DLL prioQueueDLL;
-    Stack stack;
+    Queue queue;
     LocalDateTime currentTime;//added this method to check if patient has missed an appointment
 
     public PriorityQueue() {
@@ -37,8 +37,8 @@ public class PriorityQueue implements PriorityQueueInterface{
     public void updateDLL(DLL dll) {//to update the double linked list to most recent values so i added this method to update. i call in this method BloodJFrame class
         this.prioQueueDLL = dll;
     }  
-    public void updateStack(Stack stack){//to update the stack so content is recent
-        this.stack = stack;
+    public void updateQueue(Queue queue){//to update the queue so content is recent
+        this.queue = queue;
     }
     public void save() {
         
@@ -53,7 +53,7 @@ public class PriorityQueue implements PriorityQueueInterface{
     public void noShowSave() {
         
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(missed))) {
-            oos.writeObject(stack);
+            oos.writeObject(queue);
             System.out.println("Queue Saved");
         } catch(IOException e){
         System.out.println(e);
@@ -73,7 +73,7 @@ public class PriorityQueue implements PriorityQueueInterface{
                 
                 patient.setShownUp(false);//this changes the shownUp boolean value to false because the user hasnt show up               
                 prioQueueDLL.remove(patient);//removes from dll
-                stack.push(patient);//pushes patient onto stack 
+                queue.enqueue(patient);//add patient to queue
 
             }
             currentNode = currentNode.getNext();

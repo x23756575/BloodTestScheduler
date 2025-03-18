@@ -6,7 +6,7 @@ package bloodtestscheduler;
 
 import bloodtestscheduler.Patients;
 import bloodtestscheduler.dll.DLL;
-import bloodtestscheduler.stack.Stack;
+import bloodtestscheduler.queue.Queue;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -26,7 +26,7 @@ public class BloodJFrame extends javax.swing.JFrame {
     File missed = new File("missed.dat");
     DLL prioQueueDLL = new DLL();   
     PriorityQueue pq = new PriorityQueue();
-    Stack stack = new Stack();
+    Queue queue = new Queue();
     
 
     Priority priority;
@@ -42,29 +42,27 @@ public class BloodJFrame extends javax.swing.JFrame {
     boolean shownUp = true;//this will be used to check if the patient has shown up
     
     
-public void loadPatients() {
-    if (f.exists()) {
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f))) {
-            Object obj = ois.readObject();
-            if (obj instanceof DLL) {
-                prioQueueDLL = (DLL) obj;
+    public void loadPatients() {
+        if (f.exists()) {
+            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f))) {
+                Object obj = ois.readObject();
+                if (obj instanceof DLL) {
+                    prioQueueDLL = (DLL) obj;
                 
-                pq.updateDLL(prioQueueDLL);//i added this method because the dll was being updates consistenly throughout my code, so this updates the prioQueueDLL in PriorityQueue class
-                pq.updateStack(stack);
-                if (prioQueueDLL.getHead() != null) { 
-                    prioQueueDLL.setCurr(prioQueueDLL.getHead());//i had issues with curr being null, so i set it to head to fix that when patients load up so next and back function properly
-                    printArea.setText(prioQueueDLL.getPatientInfo());
-                } else {
-                    printArea.setText("No patients in the queue.");
+                    pq.updateDLL(prioQueueDLL);//i added this method because the dll was being updates consistenly throughout my code, so this updates the prioQueueDLL in PriorityQueue class
+                    pq.updateQueue(queue);
+                    if (prioQueueDLL.getHead() != null) { 
+                        prioQueueDLL.setCurr(prioQueueDLL.getHead());//i had issues with curr being null, so i set it to head to fix that when patients load up so next and back function properly
+                        printArea.setText(prioQueueDLL.getPatientInfo());
+                    } else {
+                        printArea.setText("No patients in the queue.");
+                    }
                 }
+            } catch (IOException | ClassNotFoundException e) {
+                System.out.println(e);
             }
-        } catch (IOException | ClassNotFoundException e) {
-            System.out.println(e);
         }
     }
-}
-
-
 
    public void loadNoShows(){
     if(missed.exists()){       
@@ -74,18 +72,38 @@ public void loadPatients() {
             StringBuilder ss = new StringBuilder();
             
             
-            if(obj instanceof Stack){//implemented the stack
-                stack = (Stack) obj;
-               
-              noShowArea.setText(stack.displayStack());//displays all of stack
+            if(obj instanceof Queue){//implemented the stack
+                queue = (Queue) obj;
+                pq.updateQueue(queue);
+              noShowArea.setText(queue.displayQueue());//displays all of stack
             }
 
         }catch(IOException | ClassNotFoundException e){
             System.out.println(e);
         }    
         }
-    }       
+    }     
    
+   public Priority checkDetails(Patients temp){
+       
+       String tempDetails = temp.getDetails().toLowerCase();//takes in details from patient
+       
+       String[] newDetails = tempDetails.split("\\s+");//splits word so i can compare them with keywords
+       Priority originalPrio = temp.getPriority();//stores the original priority so we dont lose it if there details dont match
+        String[] highPriority = {"heart", "attack", "stroke", "burns", "trauma","breathing", "bleeding","bleed","poison", "seizure", "chest pain", "anaphylaxis"};
+        
+        for(int i = 0; i < newDetails.length; i++){
+            for(int j = 0;j < highPriority.length;j++){
+                if(newDetails[i].equals(highPriority[j])){
+                  return priority.HIGH;//givese the user high priority
+                    
+                }else{
+                    System.out.println("the patient priority will be determined by age");
+                }
+            }
+            
+        }return originalPrio;// this will return there original priority given by age if none of there details match anything
+   }  
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -104,6 +122,11 @@ public void loadPatients() {
         noShowArea = new javax.swing.JTextArea();
         next = new javax.swing.JButton();
         back = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -111,7 +134,7 @@ public void loadPatients() {
         ageArea.setRows(5);
         jScrollPane4.setViewportView(ageArea);
 
-        submit.setText("Submit");
+        submit.setText("Request a test");
         submit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 submitActionPerformed(evt);
@@ -141,6 +164,8 @@ public void loadPatients() {
         noShowArea.setRows(5);
         jScrollPane5.setViewportView(noShowArea);
 
+        next.setBackground(java.awt.Color.green);
+        next.setForeground(java.awt.Color.black);
         next.setText("Next");
         next.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -148,6 +173,8 @@ public void loadPatients() {
             }
         });
 
+        back.setBackground(java.awt.Color.green);
+        back.setForeground(java.awt.Color.black);
         back.setText("Back");
         back.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -155,62 +182,109 @@ public void loadPatients() {
             }
         });
 
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel1.setText("No show patients");
+
+        jLabel2.setText("Enter your name");
+
+        jLabel4.setText("Enter your details (use keywords)");
+
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel5.setText("Current appointments");
+
+        jLabel6.setText("Enter your age");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(230, Short.MAX_VALUE)
-                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 491, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(107, 107, 107))
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addGap(18, 18, 18)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 305, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(next)
-                            .addComponent(back)))
-                    .addComponent(ward)
+                        .addContainerGap()
+                        .addComponent(ward)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jLabel1)))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 404, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(14, 14, 14)
-                        .addComponent(submit)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jScrollPane1)
+                                .addGap(6, 6, 6))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 228, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jScrollPane2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel4)
+                                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(39, 39, 39)
+                                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 302, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(70, 70, 70)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(next, javax.swing.GroupLayout.DEFAULT_SIZE, 106, Short.MAX_VALUE)
+                            .addComponent(back, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(44, 44, 44))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(submit, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addGroup(layout.createSequentialGroup()
-                            .addContainerGap()
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(14, 14, 14)
-                            .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(18, 18, 18)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(layout.createSequentialGroup()
-                            .addGap(27, 27, 27)
-                            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)))
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(40, 40, 40)
-                        .addComponent(next)
-                        .addGap(10, 10, 10)
-                        .addComponent(back)))
-                .addGap(18, 18, 18)
-                .addComponent(ward, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(27, 27, 27)
-                .addComponent(submit)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 17, Short.MAX_VALUE)
-                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 272, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel5)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(3, 3, 3)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(12, 12, 12)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(next, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(back, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(12, 12, 12)))
+                .addGap(11, 11, 11)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(9, 9, 9)
+                        .addComponent(ward, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(24, 24, 24)
+                        .addComponent(submit, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(82, 82, 82)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(64, 64, 64)
+                        .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 377, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(22, Short.MAX_VALUE))
         );
 
         pack();
@@ -238,10 +312,10 @@ public void loadPatients() {
         }else{
              priority = priority.LOW;
         }
-        
             Patients temp = new Patients(name,details,age,priority,shownUp,fromWard,time);  
+            Priority detailsPrio = checkDetails(temp); //this method wil give them high priorty uf they enter important details such as stroke etc
             
-            pq.enqueue(name,details,age,priority,shownUp,fromWard,time);//sends data to PriorityQueue to be added
+            pq.enqueue(name,details,age,detailsPrio,shownUp,fromWard,time);//sends data to PriorityQueue to be added
             
             pq.checkShownUp();//checks if theres any users that havent shownup
             
@@ -302,6 +376,11 @@ public void loadPatients() {
     private javax.swing.JTextArea ageArea;
     private javax.swing.JButton back;
     private javax.swing.JTextArea detailsArea;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
