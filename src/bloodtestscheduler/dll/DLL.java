@@ -44,18 +44,20 @@ public class DLL implements LinearListInterface, Serializable {
             curr = head;
         } else {
             Node currentNode = head;
+            
             while (currentNode != null && patient.getPriority().getValue() < currentNode.getElement().getPriority().getValue()) {//keeps looping to find position to insert patient
                 currentNode = currentNode.getNext();//this line keeps the traversal continuing as long as the priority is less than the currentnode
             }
 
-            if (currentNode == null) {
-                last.setNext(newNode);
-                newNode.setPrev(last);
-                last = newNode;
+            if (currentNode == null) {//this will a patient to the end or the start if the list is empty
+                last.setNext(newNode);//sets pointer of lastnode to the new node
+                newNode.setPrev(last);//sets prev pointer of new node to last creating a connection
+                last = newNode;//the new node becomes the last node
+                
             } else if (currentNode == head) {
-                newNode.setNext(head);
-                head.setPrev(newNode);
-                head = newNode;
+                newNode.setNext(head);//newnode points to head
+                head.setPrev(newNode);//sets prev to head
+                head = newNode;//sets the new head since new node is now at the start of list
             } else {
                 Node prevNode = currentNode.getPrev();//this holds a temporary value of the prevous node necessary for this insertioon
                 prevNode.setNext(newNode);//sets the previous nodes next pointer to the newnode
@@ -146,7 +148,7 @@ public String getPatientInfo(){//this method gets the element of the curr. i use
 
                 }else{
                     if (currentNode.getPrev() != null) {//if element is not at the head or last
-                        currentNode.getPrev().setNext(currentNode.getNext());//get previous node and sets it the node 
+                        currentNode.getPrev().setNext(currentNode.getNext());//get previous node and sets it the node after currentnode
                     }
             
                     if (currentNode.getNext() != null) {

@@ -33,11 +33,11 @@ public class BloodJFrame extends javax.swing.JFrame {
     public BloodJFrame() {
         
         initComponents();
-        hardCodedPatients();
         loadPatients();     
         loadNoShows();
         this.setSize(1000,800);//sets window size
         this.setTitle("Book your blood test here!");//title..
+                hardCodedPatients();
         pq.checkShownUp();//this method will check users that have missed there appointment by 15 minutes or longer on loadup of application
     }
     boolean shownUp = true;//this will be used to check if the patient has shown up
@@ -49,11 +49,11 @@ public class BloodJFrame extends javax.swing.JFrame {
     Patients patient3 = new Patients("Bob", "none", 40, Priority.MEDIUM, true, false, LocalDateTime.now());
     Patients patient4 = new Patients("Jack", "stroke", 30, Priority.LOW, true, false, LocalDateTime.now());   
     
-    pq.enqueue(patient1.getName(), patient1.getDetails(), patient1.getAge(), patient1.getPriority(), patient1.getShownUp(), patient1.getFromWard(), patient1.getTime());
-    pq.enqueue(patient2.getName(), patient2.getDetails(), patient2.getAge(), patient2.getPriority(), patient2.getShownUp(), patient2.getFromWard(), patient2.getTime());
-    pq.enqueue(patient3.getName(), patient3.getDetails(), patient3.getAge(), patient3.getPriority(), patient3.getShownUp(), patient3.getFromWard(), patient3.getTime());
-    pq.enqueue(patient4.getName(), patient4.getDetails(), patient4.getAge(), patient4.getPriority(), patient4.getShownUp(), patient4.getFromWard(), patient4.getTime());
-    printArea.setText(pq.printPriorityQueue());
+//    pq.enqueue(patient1.getName(), patient1.getDetails(), patient1.getAge(), patient1.getPriority(), patient1.getShownUp(), patient1.getFromWard(), patient1.getTime());
+//    pq.enqueue(patient2.getName(), patient2.getDetails(), patient2.getAge(), patient2.getPriority(), patient2.getShownUp(), patient2.getFromWard(), patient2.getTime());
+//    pq.enqueue(patient3.getName(), patient3.getDetails(), patient3.getAge(), patient3.getPriority(), patient3.getShownUp(), patient3.getFromWard(), patient3.getTime());
+//    pq.enqueue(patient4.getName(), patient4.getDetails(), patient4.getAge(), patient4.getPriority(), patient4.getShownUp(), patient4.getFromWard(), patient4.getTime());
+//    pq.updateDLL(prioQueueDLL);//tests i ran
     } 
  ///------------------------------------   
     public void loadPatients() {
@@ -65,6 +65,7 @@ public class BloodJFrame extends javax.swing.JFrame {
                 
                     pq.updateDLL(prioQueueDLL);//i added this method because the dll was being updates consistenly throughout my code, so this updates the prioQueueDLL in PriorityQueue class
                     pq.updateQueue(queue);
+                    
                     if (prioQueueDLL.getHead() != null) { 
                         prioQueueDLL.setCurr(prioQueueDLL.getHead());//i had issues with curr being null, so i set it to head to fix that when patients load up so next and back function properly
                         printArea.setText(prioQueueDLL.getPatientInfo());
@@ -103,7 +104,7 @@ public class BloodJFrame extends javax.swing.JFrame {
        
        String tempDetails = temp.getDetails().toLowerCase();//takes in details from patient
        
-       String[] newDetails = tempDetails.split("\\s+");//splits word so i can compare them with keywords
+       String[] newDetails = tempDetails.split("\\s+");//splits word so i can compare them with keywords from the array
        Priority originalPrio = temp.getPriority();//stores the original priority so we dont lose it if there details dont match
         String[] highPriority = {"heart", "attack", "stroke", "burns", "trauma","breathing", "bleeding","bleed","poison", "seizure", "chest pain", "anaphylaxis"};
         

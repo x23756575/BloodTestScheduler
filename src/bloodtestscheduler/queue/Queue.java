@@ -12,7 +12,7 @@ import java.util.ArrayList;
  *
  * @author samor
  */
-public class Queue implements QueueInterface,Serializable{
+public class Queue implements QueueInterface, Serializable{
    private ArrayList<Patients> queue;
     
     public Queue(){

@@ -28,12 +28,12 @@ public class PriorityQueue implements PriorityQueueInterface{
     File f = new File("patients.dat");
     File missed = new File("missed.dat");
     private DLL prioQueueDLL;
-    Queue queue;
+    private Queue queue;
     LocalDateTime currentTime;//added this method to check if patient has missed an appointment
 
     public PriorityQueue() {
         this.prioQueueDLL = new DLL();//this is a empty dll, i added this because i was getting getting prioQueueDLL is null in other methods
-    }    
+    }      
     public void updateDLL(DLL dll) {//to update the double linked list to most recent values so i added this method to update. i call in this method BloodJFrame class
         this.prioQueueDLL = dll;
     }  
@@ -89,13 +89,12 @@ public class PriorityQueue implements PriorityQueueInterface{
     public void enqueue(String name, String details, int age, Priority priority, boolean shownUp,boolean fromWard,LocalDateTime time) {
 
         if(priority == null){
-            priority = priority.LOW;//added this to test soem issues i was having
+            priority = Priority.LOW;//added this to test soem issues i was having
         }
         Patients temp = new Patients(name,details,age,priority,shownUp,fromWard,time);        
             
         prioQueueDLL.add(temp);
         save();
-        checkShownUp(); 
     }
     public void next(){
        prioQueueDLL.next();
