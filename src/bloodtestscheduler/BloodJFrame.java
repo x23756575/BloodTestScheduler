@@ -33,6 +33,7 @@ public class BloodJFrame extends javax.swing.JFrame {
     public BloodJFrame() {
         
         initComponents();
+        hardCodedPatients();
         loadPatients();     
         loadNoShows();
         this.setSize(1000,800);//sets window size
@@ -40,8 +41,21 @@ public class BloodJFrame extends javax.swing.JFrame {
         pq.checkShownUp();//this method will check users that have missed there appointment by 15 minutes or longer on loadup of application
     }
     boolean shownUp = true;//this will be used to check if the patient has shown up
+        //hardcoded values for tester to check------------------------------------------
     
+    public void hardCodedPatients(){
+    Patients patient1 = new Patients("Alex", "heart", 65, Priority.HIGH, true, false, LocalDateTime.now());
+    Patients patient2 = new Patients("Sam", "bleeding", 50, Priority.HIGH, true, true, LocalDateTime.now());
+    Patients patient3 = new Patients("Bob", "none", 40, Priority.MEDIUM, true, false, LocalDateTime.now());
+    Patients patient4 = new Patients("Jack", "stroke", 30, Priority.LOW, true, false, LocalDateTime.now());   
     
+    pq.enqueue(patient1.getName(), patient1.getDetails(), patient1.getAge(), patient1.getPriority(), patient1.getShownUp(), patient1.getFromWard(), patient1.getTime());
+    pq.enqueue(patient2.getName(), patient2.getDetails(), patient2.getAge(), patient2.getPriority(), patient2.getShownUp(), patient2.getFromWard(), patient2.getTime());
+    pq.enqueue(patient3.getName(), patient3.getDetails(), patient3.getAge(), patient3.getPriority(), patient3.getShownUp(), patient3.getFromWard(), patient3.getTime());
+    pq.enqueue(patient4.getName(), patient4.getDetails(), patient4.getAge(), patient4.getPriority(), patient4.getShownUp(), patient4.getFromWard(), patient4.getTime());
+    printArea.setText(pq.printPriorityQueue());
+    } 
+ ///------------------------------------   
     public void loadPatients() {
         if (f.exists()) {
             try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f))) {
@@ -57,6 +71,7 @@ public class BloodJFrame extends javax.swing.JFrame {
                     } else {
                         printArea.setText("No patients in the queue.");
                     }
+                    pq.checkShownUp();
                 }
             } catch (IOException | ClassNotFoundException e) {
                 System.out.println(e);
@@ -300,10 +315,13 @@ public class BloodJFrame extends javax.swing.JFrame {
    
 
         if(name != null && strAge != null && details != null){
+            nameArea.setText("");
+            ageArea.setText("");
+            detailsArea.setText("");
+            ward.setSelected(false);
+          
          time = LocalDateTime.now();
-
-        
-        
+         
         if(age >= 60 || age == 1 || fromWard == true){// sets priority based on age or if there coming from a ward. i think this is most suitable for a simple application       
              priority = priority.HIGH;
             

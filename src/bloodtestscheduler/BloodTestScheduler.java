@@ -17,6 +17,9 @@ public class BloodTestScheduler {
         // TODO code application logic here
         BloodJFrame bf = new BloodJFrame();
         bf.setVisible(true);
+        
+        
+
     }
     
 }
